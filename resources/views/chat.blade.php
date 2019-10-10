@@ -9,7 +9,7 @@
                     <div class="card-body">
                         <div id="chat_output" class="pre-scrollable" style="min-height: 600px">
                             @foreach($messages as $message)
-                                <div user_id = "{{$message->user_id}}" class="@if($message->user_id == auth()->id())text-success @else text-info @endif border-bottom border-secondary">
+                                <div user_id = "{{$message->user_id}}" class="border-bottom border-secondary">
                                     <h4 class="user-name">{{$message->user->name}}:</h4>
                                     <p class="message">{{$message->text}}</p>
                                     <div class="text-right">
@@ -43,113 +43,32 @@
 @endsection
 
 @section('script')
-    <script src="{{asset('js/chat.js')}}"></script>
-
     <script>
         const LIMIT_SECONDS = 15;
-        function GetNow(){
-            function formatDate(number) {
-                let string = number.toString();
-                if (string.length == 1) return '0'+string;
-                return number;
+
+        const User = {};
+
+        Object.defineProperties(User, {
+            id:{
+                value: "{{auth()->user()->id}}"
+            },
+            token:{
+                value: "{{auth()->user()->getRememberToken()}}"
+            },
+            name:{
+                value: "{{auth()->user()->name}}"
             }
-            let currentdate = new Date();
-            let datetime =
-                currentdate.getFullYear() + "-"
-                + formatDate(currentdate.getMonth()+1) + "-"
-                + formatDate(currentdate.getDate()) + " "
-                + formatDate(currentdate.getHours()) + ":"
-                + formatDate(currentdate.getMinutes()) + ":"
-                + formatDate(currentdate.getSeconds());
-            return datetime;
-        }
+        });
+
         $('document').ready(function () {
             $("#chat_output").animate({scrollTop: $('#chat_output').prop("scrollHeight")}, 1000); // Scroll the chat output div
         });
-        // Websocket
-        let ws = new WebSocket("ws://localhost:8090");
-        ws.onopen = function (e) {
-            let timer = new Date() ;
-
-            // Connect to websocket
-            ws.send(
-                JSON.stringify({
-                    'type': 'connect',
-                    'user_id': '{{auth()->id()}}'
-                })
-            );
-            // Bind onkeyup event after connection
-            $('#chat_input').on('keyup', function (e) {
-                if (e.keyCode === 13 && !e.shiftKey) {
-                    if((timer > new Date())) {
-                        let refreshId = setInterval(function() {
-                            let time = Math.floor((timer - new Date()) / 1000);
-                            $('#alert #timer').text('Wait '+ time + ' seconds');
-                            if(time <= 0) {
-                                clearInterval(refreshId);
-                                $('#alert').modal('hide');
-                            }
-                        }, 1000);
-                        return $('#alert').modal('show');
-                    }
-                    timer = new Date(Date.now() + LIMIT_SECONDS * 1000);
-                    let chat_msg = $(this).val();
-                    ws.send(
-                        JSON.stringify({
-                            'type': 'chat',
-                            'user_id': '{{auth()->id()}}',
-                            'user_name': "{{auth()->user()->name}}",
-                            'message': chat_msg
-                        })
-                    );
-                    $(this).val('');
-                    console.log('{{auth()->id()}} sent ' + chat_msg);
-                }
-            });
-            UsersColor.add('{{auth()->id()}}');
-        };
-        ws.onerror = function (e) {
-            // Error handling
-            console.log(e);
-        };
-        ws.onclose = function(e) {
-            ws.send(
-                JSON.stringify({
-                    'type': 'disconnect',
-                    'user_id': '{{auth()->id()}}'
-                })
-            );
-        };
-        ws.onmessage = function (e) {
-            let json = JSON.parse(e.data);
-
-            switch (json.type) {
-                case 'chat':
-                    let msg = $('<div>');
-                    (json.user_id == '{{auth()->id()}}')? msg.addClass('text-success') : msg.addClass('text-info');
-                    msg.addClass('border-bottom border-secondary')
-                        .append($('<h4>').append(json.user_name + ':'))
-                        .append($('<p>').append(json.message))
-                        .append($('<div>').addClass('text-right').append($('<span>').addClass('text-muted').append(GetNow())));
-                    console.log(msg);
-                    $('#chat_output').append(msg); // Append the new message received
-                    $("#chat_output").animate({scrollTop: $('#chat_output').prop("scrollHeight")}, 1000); // Scroll the chat output div
-                    console.log("Received " + json.message);
-                    break;
-                case 'socket':
-                    $('#total-users').html(json.users.length);
-                    let content = [];
-                    $(json.users).each(function(){
-                        if(!(this.id in UsersColor)) UsersColor.add(this.id);
-                        let li = $('<li>').css('color', UsersColor[this.id].name).attr('user_id', this.id).append(this.name);
-                        content.push(li);
-                    });
-                    $('#list-users').html(content);
-
-                    break;
-            }
-        };
-        // ws.on('')
-
     </script>
+    <script src="{{asset('js/userColor.js')}}"></script>
+    <script src="{{asset('js/chat.js')}}"></script>
+    <script src="{{asset('js/socket.js')}}"></script>
+
+    @if(auth()->user()->isAdmin())
+        <script src="{{asset('js/admin.js')}}"></script>
+    @endif
 @endsection

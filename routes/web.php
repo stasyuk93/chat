@@ -11,7 +11,10 @@
 |
 */
 
+
+
 Route::middleware(['auth'])->group(function () {
+
     Route::get('/', 'MessageController@chat');
 });
 

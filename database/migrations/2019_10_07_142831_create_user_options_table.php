@@ -16,8 +16,8 @@ class CreateUserOptionsTable extends Migration
         Schema::create('user_options', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
-            $table->boolean('is_mute');
-            $table->boolean('is_ban');
+            $table->boolean('is_mute')->default(false);
+            $table->boolean('is_ban')->default(false);
             $table->timestamps();
         });
     }

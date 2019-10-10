@@ -20,6 +20,11 @@ class MessageController extends Controller
 
     public function chat()
     {
+//        dd(auth()->user());
+//        $a = new \App\Repositories\UserRepository();
+//        $a->ban(auth()->user());
+//        dd(\App\User::find(auth()->user()->id));
+
         $messages =  Message::with('user')->get();
 
 //        dd($messages);
