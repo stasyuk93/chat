@@ -1,5 +1,5 @@
-<div class="col-md-3" id="user-container">
-    <div class="card">
+<div class="col-md-4 col-sm-12" id="user-container">
+    <div class="card h-100">
         <div class="card-header">
             <div class="h4">
                 <span id="title-users"></span>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-8 col-sm-12">
                 <div class="card" id="chat-body">
                     <div class="card-header">Chat</div>
                     <div class="card-body">
@@ -19,6 +19,9 @@
                             @endforeach
                         </div>
                         <input id="chat_input" class="form-control mt-4" maxlength="200" placeholder="Write Message and Press Enter"/>
+                        <div class="mt-3">
+                            <button id="send-message" class="btn btn-success float-right">Send</button>
+                        </div>
                     </div>
                 </div>
             </div>

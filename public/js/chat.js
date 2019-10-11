@@ -1,43 +1,57 @@
 const Chat = {eventContainer:{}};
 
+Chat.timer = new Date();
+
 Chat.init = function (WS) {
     if(WS instanceof WebSocket){
         let timer = new Date() ;
+
         $('#chat_input').on('keyup', function (e) {
             if (e.keyCode === 13 && !e.shiftKey) {
-                if(WS.readyState != 1){
-                    $('#alert #notify').text('Connection closed');
-                    return $('#alert').modal('show');
-                }
-                if(+User.isMute) {
-                    $('#alert #notify').text('You are muted');
-                    return $('#alert').modal('show');
-                }
-                if((timer > new Date())) {
-                    let refreshId = setInterval(function() {
-                        let time = Math.floor((timer - new Date()) / 1000);
-                        $('#alert #notify').text('Wait '+ time + ' seconds');
-                        if(time <= 0) {
-                            clearInterval(refreshId);
-                            $('#alert').modal('hide');
-                        }
-                    }, 100);
-                    return $('#alert').modal('show');
-                }
-                timer = new Date(Date.now() + LIMIT_SECONDS * 1000);
-                let chat_msg = $(this).val();
-                WS.send(
-                    JSON.stringify({
-                        'event': 'onMessage',
-                        'user_id': User.id,
-                        'user_name': User.name,
-                        'message': chat_msg
-                    })
-                );
-                $(this).val('');
+                Chat.sendMessage();
             }
         });
+        $('#send-message').click(function () {
+            Chat.sendMessage();
+        });
     }
+};
+
+Chat.sendMessage = function(){
+    if(WS.readyState != 1){
+        $('#alert #notify').text('Connection closed');
+        return $('#alert').modal('show');
+    }
+
+    if(+User.isMute) {
+        $('#alert #notify').text('You are muted');
+        return $('#alert').modal('show');
+    }
+
+    let msg =$('#chat_input').val();
+    if(msg.trim() == '') return;
+
+    if((Chat.timer > new Date())) {
+        let refreshId = setInterval(function() {
+            let time = Math.floor((Chat.timer - new Date()) / 1000);
+            $('#alert #notify').text('Wait '+ time + ' seconds');
+            if(time <= 0) {
+                clearInterval(refreshId);
+                $('#alert').modal('hide');
+            }
+        }, 100);
+        return $('#alert').modal('show');
+    }
+    $('#chat_input').val('');
+    Chat.timer = new Date(Date.now() + LIMIT_SECONDS * 1000);
+    WS.send(
+        JSON.stringify({
+            'event': 'onMessage',
+            'user_id': User.id,
+            'user_name': User.name,
+            'message': msg
+        })
+    );
 };
 
 Chat.addEvent = function(event,method){
