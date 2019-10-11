@@ -36,8 +36,11 @@ class RatchetController extends Controller implements MessageComponentInterface
     {
 
         $querystring = $conn->httpRequest->getUri()->getQuery();
+
         parse_str($querystring,$queryarray);
+
         $token = $queryarray['token'];
+
         if (!$token){
             $conn->close();
         }
@@ -50,7 +53,8 @@ class RatchetController extends Controller implements MessageComponentInterface
 
         $conn->user = $user;
 
-        $this->clients->attach($conn, $user);
+        $this->clients->attach($conn);
+
         WSFabric::make('getOnlineUsers', $this, $conn)->handle(null);
 
     }
@@ -73,9 +77,6 @@ class RatchetController extends Controller implements MessageComponentInterface
     public function onMessage(ConnectionInterface $conn, $data)
     {
         $data = json_decode($data);
-
-//        $conn->user
-
         WSFabric::make($data->event, $this, $conn)->handle($data);
     }
     /**
@@ -95,6 +96,9 @@ class RatchetController extends Controller implements MessageComponentInterface
         return $this->clients;
     }
 
+    /**
+     * @return array
+     */
     public function getUsers()
     {
         $array = [];
@@ -102,5 +106,19 @@ class RatchetController extends Controller implements MessageComponentInterface
             $array[] = $client->user;
         }
         return $array;
+    }
+
+    /**
+     * @param $userId
+     * @return bool|ConnectionInterface
+     */
+    public function getClientByUserId($userId)
+    {
+        foreach ($this->clients as $client){
+            if($client->user->id == $userId) {
+                return $client;
+            }
+        }
+        return false;
     }
 }

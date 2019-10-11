@@ -24,21 +24,7 @@
             </div>
             @include('users')
         </div>
-        <div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Info</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <span id="timer"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @include('notify')
     </div>
 @endsection
 
@@ -46,8 +32,10 @@
     <script>
         const LIMIT_SECONDS = 15;
 
-        const User = {};
-
+        const User = {isMute:0};
+        @if(auth()->user()->userOption)
+            User.isMute = '{{auth()->user()->userOption->is_mute}}';
+        @endif
         Object.defineProperties(User, {
             id:{
                 value: "{{auth()->user()->id}}"

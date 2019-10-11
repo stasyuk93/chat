@@ -12,18 +12,10 @@
 */
 
 
-
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', 'MessageController@chat');
 });
 
-Route::get('color',function (){
-   return view('welcome');
-});
-
-Route::resource('message','MessageController');
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');

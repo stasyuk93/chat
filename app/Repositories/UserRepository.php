@@ -15,13 +15,25 @@ class UserRepository
         $user->userOption()->updateOrCreate(['user_id' => $user->id],['is_ban' => false]);
     }
 
+    /**
+     * @param User $user
+     * @return User
+     */
     public function mute(User $user)
     {
-        $user->userOption()->updateOrCreate(['user_id' => $user->id],['is_mute' => true]);
+        $option = $user->userOption()->updateOrCreate(['user_id' => $user->id],['is_mute' => true]);
+        $user->userOption = $option;
+        return $user;
     }
 
+    /**
+     * @param User $user
+     * @return User
+     */
     public function unMute(User $user)
     {
-        $user->userOption()->updateOrCreate(['user_id' => $user->id],['is_mute' => false]);
+        $option = $user->userOption = $user->userOption()->updateOrCreate(['user_id' => $user->id],['is_mute' => false]);
+        $user->userOption = $option;
+        return $user;
     }
 }

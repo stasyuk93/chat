@@ -1,0 +1,9 @@
+#user-container .list-group-item {
+    border: unset;
+    background-color: unset;
+    margin-bottom:unset;
+}
+
+#user-container .list-group-item:hover{
+    background-color: #f8fafc;
+}
