@@ -1,0 +1,36 @@
+chat_db:
+    image: mysql:5.7
+    container_name: chat_db
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: chat_db
+        MYSQL_USER: root
+        MYSQL_PASSWORD: root
+    command: mysqld --sql_mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION" --disable-partition-engine-check
+
+chat_php:
+    build: docker/php
+    restart: always
+    container_name: chat_php
+    links:
+        - chat_db
+    volumes:
+        - ./:/var/www/chat
+#    command: sh docker/php/cron/auto-start.sh
+
+chat_nginx:
+    build: docker/nginx
+    restart: always
+    container_name: chat_nginx
+    links:
+        - chat_php
+    volumes_from:
+        - chat_php
+
+chat_node:
+    build: .
+    container_name: chat_node
+    restart: always
+    volumes:
+      - ./:/var/www/chat
+      - node_modules:/var/www/chat/node_modules

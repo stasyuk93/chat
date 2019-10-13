@@ -1,0 +1,11 @@
+chat_nginx:
+  ports:
+    - 800:80
+
+chat_db:
+  ports:
+    - 3307:3306
+
+chat_node:
+  ports:
+    - 3000:3000

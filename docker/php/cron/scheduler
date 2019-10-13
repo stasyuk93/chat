@@ -1,0 +1,2 @@
+* * * * * /usr/local/bin/php /var/www/chat/artisan schedule:run >> /var/log/schedule.log 2>&1
+

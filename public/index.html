@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <ul id="messages"></ul>
+    <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+
+            var socket = io({query:{token:12345}});
+            $('form').submit(function(e){
+                e.preventDefault(); // prevents page reloading
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+            socket.on('chat message', function(msg){
+                console.log(msg)
+                $('#messages').append($('<li>').text(msg));
+            });
+            socket.on('close', function(msg){
+                console.log(msg);
+            });
+            socket.on('disconnect', function(msg){
+                console.log(msg);
+            });
+    </script>
+</body>
+</html>
