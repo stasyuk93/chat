@@ -14,6 +14,7 @@ WS.onclose = function(e) {
 };
 WS.onmessage = function (e) {
     let data = JSON.parse(e.data);
+    if(!data.event) return;
     Chat.event(data.event, data);
 };
 

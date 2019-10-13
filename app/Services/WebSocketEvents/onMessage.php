@@ -52,6 +52,7 @@ class onMessage extends AbstractWS
     public function checkLimitMessageByTime($user_id, $timer = 15)
     {
         $lastMessage = Message::orderBy('created_at', 'desc')->first();
+        if(!$lastMessage) return true;
         $now = Carbon::now();
         $messageTime = new Carbon($lastMessage->created_at);
         if($now->diffInSeconds($messageTime) >= $timer) return true;
