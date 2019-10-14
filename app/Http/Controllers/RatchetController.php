@@ -77,6 +77,7 @@ class RatchetController extends Controller implements MessageComponentInterface
     public function onMessage(ConnectionInterface $conn, $data)
     {
         $data = json_decode($data);
+        if(!isset($data->event) || empty($data->event)) return;
         WSFabric::make($data->event, $this, $conn)->handle($data);
     }
     /**
@@ -87,8 +88,9 @@ class RatchetController extends Controller implements MessageComponentInterface
      */
     public function onError(ConnectionInterface $conn, Exception $e)
     {
-        dump($e);
-        $conn->close();
+        info($e);
+        $conn->send(json_encode($e));
+//        $conn->close();
     }
 
     public function getClients()
