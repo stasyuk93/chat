@@ -11,11 +11,13 @@
 |
 */
 
+Route::get('/login','LoginController@loginPage')->name('login');
+Route::post('/login','LoginController@login');
+Route::post('/logout','LoginController@logout')->name('logout');
 
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', 'MessageController@chat');
 });
 
-Auth::routes();
 

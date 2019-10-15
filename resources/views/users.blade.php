@@ -1,11 +1,11 @@
-<div class="col-md-4 col-sm-12" id="user-container">
+<div class="col-md-4 col-sm-12 d-none d-md-block h-100" id="user-container">
     <div class="card h-100">
         <div class="card-header">
             <div class="h4">
                 <span id="title-users"></span>
                 <span id="total-users"></span>
             </div>
-            @if(auth()->user()->isAdmin())
+            @if($user->isAdmin())
             <div>
                 <div class="dropdown d-inline">
                     <button class="btn btn-success fa fa-user-circle-o" type="button" id="user-option" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
@@ -24,8 +24,8 @@
             </div>
             @endif
         </div>
-        <div class="card-body">
-            <ul id="list-users" class="list-group list-group-flush h4"></ul>
+        <div class="card-body h-100">
+            <ul id="list-users" class="list-group list-group-flush h4" style="overflow-y: auto"></ul>
         </div>
     </div>
 </div>

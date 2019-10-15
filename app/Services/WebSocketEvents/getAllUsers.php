@@ -8,7 +8,9 @@ class getAllUsers extends AbstractAdminWS
 {
     public function handle($data)
     {
-        if(!$this->isAdmin()) return;
+        if(!$this->isAdmin()) {
+            return;
+        }
         $data = [
             'event' => 'showAllUsers',
             'users' => User::all()

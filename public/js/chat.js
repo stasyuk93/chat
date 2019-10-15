@@ -2,19 +2,15 @@ const Chat = {eventContainer:{}};
 
 Chat.timer = new Date();
 
-Chat.init = function (WS) {
-    if(WS instanceof WebSocket){
-        let timer = new Date() ;
-
-        $('#chat_input').on('keyup', function (e) {
-            if (e.keyCode === 13 && !e.shiftKey) {
-                Chat.sendMessage();
-            }
-        });
-        $('#send-message').click(function () {
+Chat.init = function () {
+    $('#chat_input').on('keyup', function (e) {
+        if (e.keyCode === 13 && !e.shiftKey) {
             Chat.sendMessage();
-        });
-    }
+        }
+    });
+    $('#send-message').click(function () {
+        Chat.sendMessage();
+    });
 };
 
 Chat.sendMessage = function(){
@@ -29,26 +25,29 @@ Chat.sendMessage = function(){
     }
 
     let msg =$('#chat_input').val();
-    if(msg.trim() == '') return;
 
-    if((Chat.timer > new Date())) {
-        let refreshId = setInterval(function() {
-            let time = Math.floor((Chat.timer - new Date()) / 1000);
-            $('#alert #notify').text('Wait '+ time + ' seconds');
-            if(time <= 0) {
-                clearInterval(refreshId);
-                $('#alert').modal('hide');
-            }
-        }, 100);
-        return $('#alert').modal('show');
+    if(msg.trim() == '') {
+        return;
     }
+    if(!+User.isAdmin){
+        if((Chat.timer > new Date())) {
+            let refreshId = setInterval(function() {
+                let time = Math.floor((Chat.timer - new Date()) / 1000);
+                $('#alert #notify').text('Wait '+ time + ' seconds');
+                if(time <= 0) {
+                    clearInterval(refreshId);
+                    $('#alert').modal('hide');
+                }
+            }, 100);
+            return $('#alert').modal('show');
+        }
+    }
+
     $('#chat_input').val('');
     Chat.timer = new Date(Date.now() + LIMIT_SECONDS * 1000);
     WS.send(
         JSON.stringify({
             'event': 'onMessage',
-            'user_id': User.id,
-            'user_name': User.name,
             'message': msg
         })
     );
@@ -67,8 +66,6 @@ Chat.event = function (event, data) {
 };
 
 Chat.addEvent('onMessage', function (data) {
-    console.log(data);
-
     let msg = $('<div>');
     msg.addClass('border-bottom border-secondary')
         .append($('<h4>').append(data.user_name + ':').css('color',UsersColor.storage[data.user_id].name))
@@ -79,7 +76,6 @@ Chat.addEvent('onMessage', function (data) {
 });
 
 Chat.addEvent('getOnlineUsers', function (data) {
-    console.log(data);
     this.renderUserList(data);
 });
 
@@ -87,32 +83,36 @@ Chat.addEvent('onClose', function(data){
     this.renderUserList(data);
 });
 
-Chat.addEvent('onMuteClient',function (data) {
+Chat.addEvent('onBanClient', function(){
+    document.getElementById('logout-form').submit();
+});
+
+Chat.addEvent('onMuteClient',function () {
     User.isMute = 1;
     $('#alert #notify').text('You are muted');
     $('#alert').modal('show');
 });
 
-Chat.addEvent('unMuteClient',function (data) {
+Chat.addEvent('unMuteClient',function () {
     User.isMute = 0;
     $('#alert #notify').text('You are unmuted');
     $('#alert').modal('show');
 });
 
-Chat.getOnlineUsersForClient = function (WS) {
-    if(WS instanceof WebSocket){
-        WS.send(
-            JSON.stringify({
-                'event': 'getOnlineUsersForClient'
-            })
-        );
-    }
+Chat.getOnlineUsersForClient = function () {
+    WS.send(
+        JSON.stringify({
+            'event': 'getOnlineUsersForClient'
+        })
+    );
 };
 
 Chat.now = function (){
     function formatDate(number) {
         let string = number.toString();
-        if (string.length == 1) return '0'+string;
+        if (string.length == 1) {
+            return '0'+string;
+        }
         return number;
     }
     let currentdate = new Date();
@@ -132,7 +132,9 @@ Chat.renderUserList = function (data) {
     $(data.users).each(function(){
         let isBan = 0;
         let isMute = 0;
-        if(!(this.id in UsersColor.storage)) UsersColor.add(this.id);
+        if(!(this.id in UsersColor.storage)) {
+            UsersColor.add(this.id);
+        }
         let li = $('<li>').addClass('list-group-item list-group-item-action').css('color', UsersColor.storage[this.id].name).attr('user_id', this.id).append(this.name);
         if(this.user_option){
             isBan = this.user_option.is_ban;

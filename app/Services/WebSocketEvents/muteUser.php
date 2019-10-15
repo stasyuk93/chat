@@ -9,11 +9,15 @@ class muteUser extends AbstractAdminWS
 {
     public function handle($data)
     {
-        if(!$this->isAdmin()) return;
+        if(!$this->isAdmin()) {
+            return;
+        }
 
         $user = User::find($data->user_id);
 
-        if(!$user) return;
+        if(!$user) {
+            return;
+        }
 
         $repository = new UserRepository();
         $user = $repository->mute($user);
@@ -23,7 +27,9 @@ class muteUser extends AbstractAdminWS
         ]));
         $client = $this->ratchet->getClientByUserId($user->id);
 
-        if(!$client) return;
+        if(!$client) {
+            return;
+        }
         $client->user = $user;
         $client->send(json_encode([
             'event' => 'onMuteClient'

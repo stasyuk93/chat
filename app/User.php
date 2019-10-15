@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','remember_token',
+        'name', 'password','remember_token',
     ];
 
     /**
@@ -29,15 +29,18 @@ class User extends Authenticatable
     ];
 
     public $with = ['roles','userOption'];
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function messages()
+    {
+        return $this->hasMany(Models\Message::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function roles()
     {
         return $this->belongsToMany(Models\Role::class,'user_roles');
@@ -52,7 +55,9 @@ class User extends Authenticatable
      * @return bool
      */
     public function isBanned(){
-        if($this->userOption && $this->userOption->is_ban) return true;
+        if($this->userOption && $this->userOption->is_ban) {
+            return true;
+        }
         return false;
     }
 
@@ -61,7 +66,9 @@ class User extends Authenticatable
      */
     public function isMuted()
     {
-        if($this->userOption && $this->userOption->is_mute) return true;
+        if($this->userOption && $this->userOption->is_mute) {
+            return true;
+        }
         return false;
     }
 
@@ -70,9 +77,13 @@ class User extends Authenticatable
      */
     public function isAdmin()
     {
-        if($this->roles->isEmpty()) return false;
+        if($this->roles->isEmpty()) {
+            return false;
+        }
         foreach ($this->roles as $role){
-            if($role->name == 'admin') return true;
+            if($role->name == 'admin') {
+                return true;
+            }
         }
         return false;
     }

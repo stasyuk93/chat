@@ -9,19 +9,29 @@ class banUser extends AbstractAdminWS
 {
     public function handle($data)
     {
-        if(!$this->isAdmin()) return;
+        if(!$this->isAdmin()) {
+            return;
+        }
 
         $user = User::find($data->user_id);
 
-        if(!$user) return;
+        if(!$user) {
+            return;
+        }
 
         $repository = new UserRepository();
         $repository->ban($user);
         $client = $this->ratchet->getClientByUserId($user->id);
 
-        if(!$client) return;
+        if(!$client){
+            return;
+        }
 
         $this->ratchet->getClients()->detach($client);
+
+        $client->send(json_encode([
+            'event' => 'onBanClient'
+        ]));
 
         $client->close();
 
