@@ -19,10 +19,10 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="h-25">
-                            <input id="chat_input" class="form-control mt-4" maxlength="200" placeholder="Write Message and Press Enter"/>
+                        <div class="h-25 mt-4">
+                            <input id="chat_input" class="form-control " maxlength="200" placeholder="Write Message and Press Enter"/>
                             <div class="mt-1">
-                                <button id="send-message" class="btn btn-success float-right">Send</button>
+                                <button id="send-message" class="btn btn-success">Send</button>
                             </div>
                         </div>
                     </div>

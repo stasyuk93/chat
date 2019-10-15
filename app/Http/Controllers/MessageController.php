@@ -21,11 +21,6 @@ class MessageController extends Controller
     public function chat()
     {
         $user = auth()->user();
-
-        if($user->isBanned()) {
-            auth()->logout();
-            return redirect('/login');
-        }
         $messages =  Message::with('user')->get();
         return view('chat',compact('messages','user'));
     }

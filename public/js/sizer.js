@@ -18,12 +18,14 @@ function showChat(e){
 (()=>{
     function setSizeChat()
     {
-        let h = $(window).height();
-        let navH = $('nav').outerHeight();
-        let mH = 100 - (navH/h * 100);
-        $('main').css('height',mH+'%');
-        let cbH = $('#chat-body > .card-body').height();
-        $('#chat_output').height(cbH - cbH * .25);
+        let height = $(window).height();
+        let navHeight = $('nav').outerHeight();
+        let mainHeight = 100 - (navHeight/height * 100);
+        $('main').css('height',mainHeight+'%');
+        let chatBodyHeight = $('#chat-body > .card-body').height();
+        let inputHeight = $('#chat_input').parent().outerHeight();
+        let chatOutputHeight = chatBodyHeight - inputHeight - 50;
+        $('#chat_output').height(chatOutputHeight);
         $('#list-users').height($('#list-users').parent().height() - ($('#list-users').parent().outerHeight() - $('#list-users').parent().height()));
     };
     setSizeChat();
