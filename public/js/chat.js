@@ -26,9 +26,10 @@ Chat.sendMessage = function(){
 
     let msg =$('#chat_input').val();
 
-    if(msg.trim() == '') {
+    if(msg.trim() === '') {
         return;
     }
+
     if(!+User.isAdmin){
         if((Chat.timer > new Date())) {
             let refreshId = setInterval(function() {

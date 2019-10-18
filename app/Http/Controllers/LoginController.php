@@ -40,7 +40,7 @@ class LoginController extends Controller
 
         if(Hash::check($request->get('password'), $user->password)){
             Auth::login($user);
-            return redirect('/');
+            return redirect()->intended();
         }
 
         return redirect('/login');

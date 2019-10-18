@@ -16,8 +16,12 @@ Route::post('/login','LoginController@login');
 Route::post('/logout','LoginController@logout')->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-
     Route::get('/', 'MessageController@chat');
 });
 
 
+Route::prefix('react')->group(function (){
+    Route::get('{path?}', function(){
+        return view('react.app');
+    });
+});

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Exception;
 use React\EventLoop\LoopInterface;
-use React\EventLoop\TimerInterface;
 use SplObjectStorage;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
@@ -40,6 +39,7 @@ class RatchetController extends Controller implements MessageComponentInterface
         parse_str($querystring,$queryarray);
 
         $token = $queryarray['token'];
+
 
         if (!$token){
             $conn->close();
@@ -112,6 +112,11 @@ class RatchetController extends Controller implements MessageComponentInterface
             $array[] = $client->user;
         }
         return $array;
+
+        // this code dosnt work
+//        return array_map(function($client){
+//            return $client->user;
+//        },(array)$this->clients);
     }
 
     /**

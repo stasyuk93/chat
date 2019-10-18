@@ -40,11 +40,11 @@ class StartRatchetServer extends Command
      */
     public function handle()
     {
-        $port = env('RATCHET_PORT') ? env('RATCHET_PORT') : 8090;
-        echo "Ratchet server started on localhost:$port \n";
+        $host = '127.0.0.1:8090';
         $loop = LoopFactory::create();
-        $socket = new Reactor($port, $loop);
+        $socket = new Reactor($host, $loop);
         $server = new IoServer(new HttpServer(new WsServer(new RatchetController($loop))), $socket, $loop);
+        echo "Ratchet server started on $host \n";
         $server->run();
     }
 }
